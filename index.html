@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+	<head>
+		<title>Conversor de Divisas</title>
+		<script language="javascript" type="text/javascript"> 
+			var cambio_dolar = 14.40;             
+			var cambio_dolar_fecha = "10/02/2016";                                       
+			var valor;                             
+			var error;                             
+			function euroconversor(mon, form) 
+  				{                                    
+    				cambios = [1.0,                    
+               		cambio_dolar,           // US$ 
+               		1.95583,                // marcos alemanes 
+               		13.7603,                // chelines austriacos 
+               		40.3399,                // francos belgas 
+               		166.386,                // pesetas espanolas 
+               		5.94573,                // marcos finlandeses 
+               		6.55957,                // francos franceses 
+               		340.75,                 // dracmas griegos 
+               		2.20371,                // florines holandeses 
+               		0.787564,               // libras irlandesas 
+               		1936.27,                // liras italianas 
+               		40.3399,                // francos luxemburgueses 
+               		200.482,				 // escudos portugueses
+               		0.8878,					//euros
+               		0.68655,				//libras esterlinas
+               		1.73998,				//Lev bulgaro
+               		6.63983,               //Corona Danesa
+               		6.79889,				//kuna croata
+               		54.81832,				//Denar Macedonio
+               		3.93751,]				//Zloty Pölaco
+    		var valor_euros;                  
+    		var formato;                       
+    		var decimal;                       
+    		valor = form.dolar.value;          
+   				if(!vacio(valor)) 
+      				{ 
+        				formato = normalizar(0);        
+        				if(isNaN(valor)) 
+          					alert("El cambio US$/euro no es un número correcto.\n" + 
+                			"Debe estar en la forma 1552,95 o 1552.95.\n" + 
+                			"Se tomará el valor " + cambios[1] + " US$/euro por defecto " + 
+                			"(" + cambio_dolar_fecha + ")."); 
+        				else 
+          					cambios[1] = valor; 
+      				} 
+    			else 
+      				formato = 0; 
+    				decimal = formato == 1 ? ',' : '.'; 
+    				valor = form.moneda[mon].value;     
+    					if(vacio(valor)) 
+      						alert("No hay cantidad a cambiar."); 
+    					else 
+      				{ 
+        				formato = normalizar(formato); 
+        					if(isNaN(valor)) 
+          						alert("La moneda no es un número correcto.\n" + 
+                				"Debe estar en la forma 1552,95 o 1552.95."); 
+        					else 
+          					if(error) 
+            					alert("La moneda no está en la misma forma que el valor " + 
+                  				"US$/euro.\n" + 
+                  				"Debe estar en la forma 1552" + decimal + "95."); 
+          					else 
+            				{ 
+              					if(mon == 0)             
+                					valor_euros = valor;   
+              					else 
+                				valor_euros = valor / cambios[mon]; 
+              					cambiar(cambios, 0, mon, valor_euros, formato, form); 
+              					cambiar(cambios, mon + 1, cambios.length, valor_euros, formato, 
+                      			form); 
+            				} 
+      				} 
+  				} 
+				function vacio(cadena) 
+  				{                                    
+    				var blanco = " \n\r\t";         
+                                      
+    				var i;                             
+    				var es_vacio;                    
+    				for(i = 0, es_vacio = true; (i < cadena.length) && es_vacio; i++) 
+      				es_vacio = blanco.indexOf(cadena.charAt(i)) != - 1; 
+    				return(es_vacio); 
+  				} 
+				function normalizar(formato_ant) 
+  				{                                    
+    				var formato_act = 0;              
+    				var coma = valor.indexOf(',');     
+    				var punto = valor.indexOf('.');    
+    					if((coma == -1) && (punto == -1))  
+      					{                                
+        					formato_act = formato_ant; 
+        					error = false; 
+      					} 
+    					else 
+      						if(coma != -1)                   
+        					{ 
+          						formato_act = 1; 
+          						error = formato_ant == 2; 
+        					} 
+      						else                             
+        					{ 
+          						formato_act = 2; 
+          						error = formato_ant == 1; 
+        					} 
+    						if((formato_act == 1) && (coma != -1)) 
+      							valor = valor.substring(0, coma) + '.' + 
+              					valor.substring(coma + 1, valor.length); 
+    							return(formato_act); 
+  				} 
+				function cambiar(cambios, inf, sup, euros, formato, form) 
+  				{                                    
+    				var i;                             
+    				var valor_x;                       
+    				var punto;                         
+    				for(i = inf; i < sup; i++)         
+      					{                                
+        					valor_x = euros * cambios[i]; 
+        					valor_x = valor_x.toString(); 
+        						if(formato == 1)               
+          						{ 
+            						punto = valor_x.indexOf('.'); 
+            						if(punto != -1) 
+              						valor_x = valor_x.substring(0, punto) + ',' + 
+                        			valor_x.substring(punto + 1, valor_x.length); 
+          						} 
+        					form.moneda[i].value = valor_x; 
+      					} 
+  				} 
+		</script> 
+		<meta charset="UTF-8"/>
+		<link rel="stylesheet" type="text/css" href="bootstrap.css"/>
+	</head>
+	<body>
+		<header>
+			<div class="col-lg-12 col-md-12 col-sm-12 col-sx-12">
+				<h1>Convertidor de moneda</h1>
+			</div>
+		</header>
+		<main>
+			<div class="container"> 
+				<div class="row">
+					<div class="col-lg-5 col-md-5 col-sm-12 col-sx-12 buscador forma"> 
+					<p> 
+						<form> 
+  							Introduce el cambio actual AR$/US$:<br> 
+  							<input type="text" name="dolar" size="20">
+  							<br/>
+  							<br/> 
+  							Introduce el valor en AR$ o US$ a convertir y pulsa enter:<br> 
+  							<input type="text" name="moneda" value="" size="20" onchange="javascript:euroconversor(0, this.form);">US$
+  							<br/> 
+  							<input type="text" name="moneda" value="" size="20" onchange="javascript:euroconversor(1, this.form);">AR$
+  							<br/>
+  							<br/> 
+  							Resultado de la conversión:
+  							<br/> 
+  							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(2, this.form);"> Marcos alemanes<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(3, this.form);"> Chelines austriacos<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(4, this.form);"> Francos belgas<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(5, this.form);"> Pesetas españolas<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(6, this.form);"> Marcos finlandeses<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(7, this.form);"> Francos franceses<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(8, this.form);"> Dracmas griegos<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(9, this.form);"> Florines holandeses<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(10, this.form);"> Libras irlandesas<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(11, this.form);"> Liras italianas<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(12, this.form);"> Francos luxemburgueses<br> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(13, this.form);"> Escudos portugueses<br/> 
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(14, this.form);"> Euros<br/>
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(15, this.form);"> Libras Esterlinas</br>
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(16, this.form);"> Lev Bulgaro</br>
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(17, this.form);"> Corona Danesa</br>
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(18, this.form);"> Kuna Croata</br>
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(19, this.form);"> Denar Macedonio</br>
+							<input type="text" name="moneda" value="0" size="20" onchange="javascript:euroconversor(20, this.form);"> Zloty Polaco</br>
+						</form>
+					</p> 
+					</div>
+				</div>
+			</div> 
+		</main>
+		<footer></footer>
+	</body>
+</html>
